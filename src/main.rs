@@ -1,19 +1,21 @@
 #[macro_use]
 extern crate serde_json;
+extern crate dotenv;
 extern crate reqwest;
+
 extern crate rgit;
 
-use rgit::Config;
-
+use dotenv::dotenv;
 use reqwest::header::{Authorization, Bearer, Headers};
 use reqwest::Client;
+use rgit::Config;
 use std::env;
 use std::process;
 
 const BASE_URL: &'static str = "https://api.github.com/user/repos";
-const TOKEN: &'static str = "f146a0d92f91a9b06b31bc546f98a316bdce6a60";
 
 fn main() {
+    dotenv().ok();
     let args: Vec<String> = env::args().collect();
 
     let config = Config::new(&args).unwrap_or_else(|err| {
@@ -48,9 +50,11 @@ fn main() {
 }
 
 fn construct_headers() -> Headers {
+    let token = env::var("TOKEN").unwrap();
+
     let mut headers = Headers::new();
     headers.set(Authorization(Bearer {
-        token: TOKEN.to_owned(),
+        token: token.to_owned(),
     }));
     headers
 }
