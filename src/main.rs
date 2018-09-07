@@ -1,5 +1,6 @@
 #[macro_use]
 extern crate serde_json;
+
 extern crate dotenv;
 extern crate reqwest;
 
@@ -10,7 +11,7 @@ use reqwest::header::{Authorization, Bearer, Headers};
 use reqwest::Client;
 use rgit::Config;
 use std::env;
-use std::process;
+// use std::process;
 
 const BASE_URL: &'static str = "https://api.github.com/user/repos";
 
@@ -18,10 +19,7 @@ fn main() {
     dotenv().ok();
     let args: Vec<String> = env::args().collect();
 
-    let config = Config::new(&args).unwrap_or_else(|err| {
-        println!("Problem parsing arguments {}", err);
-        process::exit(1);
-    });
+    let config = Config::new(&args).unwrap();
 
     let c = config.clone();
 
@@ -43,7 +41,7 @@ fn main() {
         }
         Err(e) => {
             println!("Error during request.");
-            println!("{}", e);
+            println!("Error is ..{}", e);
         }
     };
     // list_repo()
@@ -58,16 +56,6 @@ fn construct_headers() -> Headers {
     }));
     headers
 }
-
-// fn list_repo() {
-//     //  /user/repos
-//     let client = Client::new();
-//     let resp = client
-//         .get("https://api.github.com/user/repos")
-//         .json()
-//         .send()?;
-//     println!("{:?}", resp);
-// }
 
 fn make_request(config: Config) -> Result<reqwest::Response, reqwest::Error> {
     let repo_payload = json!({
