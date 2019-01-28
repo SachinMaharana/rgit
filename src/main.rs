@@ -7,19 +7,22 @@ extern crate reqwest;
 extern crate rgit;
 
 use dotenv::dotenv;
-use reqwest::header::{Authorization, Bearer, Headers};
+use reqwest::header;
+use reqwest::header::HeaderMap;
+
+
 use reqwest::Client;
 use rgit::Config;
 use std::env;
 // use std::process;
 
-const BASE_URL: &'static str = "https://api.github.com/user/repos";
+
 
 fn main() {
     dotenv().ok();
     let args: Vec<String> = env::args().collect();
 
-    let config = Config::new(&args).unwrap();
+    let config = Config::new(&args).expect("Something");
 
     let c = config.clone();
 
@@ -35,7 +38,7 @@ fn main() {
             } else if resp.status().is_server_error() {
                 println!("Server error!");
             } else {
-                println!("Something else happened. Github Says: {:?}", resp.status());
+                println!("Something else happened. Github Says: {:?}", resp. error_for_status());
                 println!("Repo {} Might Already Exist!", c.repo_name);
             }
         }
@@ -47,13 +50,16 @@ fn main() {
     // list_repo()
 }
 
-fn construct_headers() -> Headers {
-    let token = env::var("TOKEN").unwrap();
+fn construct_headers() -> HeaderMap {
+    // let token = env::var("TOKEN").unwrap().to_owned();
+    // let t = token.to_owned();
+    let mut headers = header::HeaderMap::new();
 
-    let mut headers = Headers::new();
-    headers.set(Authorization(Bearer {
-        token: token.to_owned(),
-    }));
+    // let mut headers = Headers::new();
+    headers.insert(header::AUTHORIZATION, header::HeaderValue::from_static("e2381ce15042db120b283db9bd72f4ca9204a79b"));
+    // headers.set(Authorization(Bearer {
+    //     token: token.to_owned(),
+    // }));
     headers
 }
 
@@ -62,41 +68,20 @@ fn make_request(config: Config) -> Result<reqwest::Response, reqwest::Error> {
        "name": config.repo_name,
        "description": config.repo_desc,
     });
+    let BASE_URL = "https://api.github.com/user/repos";
+    let token = env::var("TOKEN").unwrap().to_owned();
+
+
+    let T = format!("?access_token={}", token);
+    let result = format!("{}{}", BASE_URL, T);
+
+
     let client = Client::new();
     let resp = client
-        .post(BASE_URL)
-        .headers(construct_headers())
+        .post(&result)
+        // .headers(construct_headers())
         .json(&repo_payload)
         .send()?;
 
     Ok(resp)
 }
-
-// fn run() -> Result<(), reqwest::Error> {
-//     let gist_body = json!({
-//        "name": "Ok",
-//        "description": "This is your first repository",
-//         });
-
-//     let resp = Client::new()
-//         .post(BASE_URL)
-//         .headers(construct_headers())
-//         .json(&gist_body)
-//         .send()?;
-//     if resp.status().is_success() {
-//         println!("success!");
-//     } else if resp.status().is_server_error() {
-//         println!("server error!");
-//     } else {
-//         println!("Something else happened. Status: {:?}", resp.status());
-//     }
-
-//     // match resp.status() {
-//     //     StatusCode::Ok => println!("success!"),
-//     //     StatusCode::UnprocessableEntity => {
-//     //         println!("Already Exist");
-//     //     }
-//     //     s => println!("Received response status: {:?}", s),
-//     // };
-//     Ok(())
-// }

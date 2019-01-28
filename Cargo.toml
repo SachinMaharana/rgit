@@ -4,6 +4,6 @@ version = "0.1.0"
 authors = ["SachinMaharana <sachin.nicky@gmail.com>"]
 
 [dependencies]
-reqwest = "0.8.8"
-serde_json = "1.0"
-dotenv = "0.10.0"
+reqwest = "0.9.9"
+serde_json = "1.0.37"
+dotenv = "0.13.0"
