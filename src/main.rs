@@ -56,7 +56,7 @@ fn construct_headers() -> HeaderMap {
     let mut headers = header::HeaderMap::new();
 
     // let mut headers = Headers::new();
-    headers.insert(header::AUTHORIZATION, header::HeaderValue::from_static("e2381ce15042db120b283db9bd72f4ca9204a79b"));
+    headers.insert(header::AUTHORIZATION, header::HeaderValue::from_static(""));
     // headers.set(Authorization(Bearer {
     //     token: token.to_owned(),
     // }));
